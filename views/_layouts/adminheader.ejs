@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/adminstyle.css">
+    <title>Admin</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand navbar-dark bg-dark"> 
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapse" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toogle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a href="#" class="navbar-brand" target="_blank">CmsShoppingCart</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="/admin/pages">Pages</a></li>
+            <li class="nav-item"><a class="nav-link" href="/admin/categories">Categories</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </nav>
+    <div class="container">
+    <%- messages('messages', locals) %>
+    <% if(errors) {%>
+      <% errors.forEach(function(error){%>
+        <div class="alert alert-danger">
+          <h1><%=error.msg %></h1>
+        </div> 
+        <% });%>
+    <% }%>
