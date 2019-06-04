@@ -21,7 +21,7 @@ var ProductSchema=mongoose.Schema({
         type:Number,
         required:true
     },
-    images:{
+    image:{
         type:String
     }
 })

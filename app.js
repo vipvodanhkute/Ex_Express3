@@ -21,6 +21,26 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 // Set global errors variable
 app.locals.errors = null;
+// Get Page Model
+var Page=require('./models/page');
+// Get all pages to pass to header.ejs
+Page.find({}).sort({sorting:1}).exec(function (err,pages){
+  if(err){
+    console.log(err);
+  }else{
+    app.locals.pages=pages;
+  }
+}); 
+// Get Category Model
+var Category=require('./models/category');
+// Get all categories to pass to header.ejs
+Category.find(function (err,categories){
+  if(err){
+    console.log(err);
+  }else{
+    app.locals.categories=categories;
+  }
+}); 
 // BodyParser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 // BodyParser json
@@ -51,6 +71,7 @@ app.use(expressValidator({
   customValidators: {
     isImage: function (value, filename) {
       var extension = (path.extname(filename)).toLowerCase();
+      console.log(extension);
       switch (extension) {
         case '.jpg':
           return '.jpg';
@@ -74,17 +95,29 @@ app.use(function (req, res, next) {
   res.locals.messages = require('express-messages')(req, res);
   next();
 });
+// chua hiu
+app.get('*',function(req,res,next){
+  res.locals.cart=req.session.cart;
+  //console.log(res.locals.cart);
+  next();
+})
 // Set public folder
 app.use(express.static(path.join(__dirname, 'public')));
 //Set routes
 var pages = require('./routes/pages.js');
+var products = require('./routes/products.js');
+var cart = require('./routes/cart.js');
 var adminPages = require('./routes/admin_pages.js');
 var adminCategory = require('./routes/admin_categories.js');
 var adminProduct = require('./routes/admin_products.js');
-app.use('/', pages);
+
+
 app.use('/admin/pages', adminPages);
 app.use('/admin/categories', adminCategory);
 app.use('/admin/products', adminProduct);
+app.use('/products', products);
+app.use('/cart', cart);
+app.use('/', pages);
 var port = 3000;
 app.listen(port, function () {
   console.log('Server started on port ' + port);

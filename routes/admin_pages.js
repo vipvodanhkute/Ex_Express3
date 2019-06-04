@@ -62,6 +62,13 @@ router.post('/add-page',function(req,res){
                 });
                 page.save(function(err){
                     if(err) return console.log(err);
+                    Page.find({}).sort({sorting:1}).exec(function (err,pages){
+                        if(err){
+                          console.log(err);
+                        }else{
+                          req.app.locals.pages=pages;
+                        }
+                      }); 
                     req.flash('success','Page added!');
                     res.redirect('/admin/pages');
                 });
@@ -69,27 +76,52 @@ router.post('/add-page',function(req,res){
         });
     }
 })
+// Sort pages function
+function sortPages(ids,callback){
+    var count = 0;
+    for(var i = 0;i<ids.length;i++){
+     var id=ids[i];
+     count ++;
+     (function(count){
+         Page.findById(id,function(err,page){
+             page.sorting=count;
+             page.save(function(err){
+                 if(err)
+                     return console.log(err);
+                     ++count;
+                     if(count>=ids.length){
+                         callback();
+                     } 
+             });
+         });
+     })(count);   
+}
+}
 /*
 * POST reorder pages
 */
 router.post('/reorder-pages',function(req,res){
        //console.log(req.body)
+       //tu update
        var ids = req.body['id[]'];
-       var count = 0;
-       for(var i = 0;i<ids.length;i++){
-        var id=ids[i];
-        count ++;
-        // (function(count){
-        //     Page.findById(id,function(err,page){
-        //         page.sorting=count;
-        //         page.save(function(err){
-        //             if(err)
-        //                 return console.log(err);
-        //         });
-        //     });
-        // })(count);
-       }
-})
+       sortPages(ids,function(){
+        Page.find({}).sort({sorting:1}).exec(function (err,pages){
+            if(err){
+              console.log(err);
+            }else{
+              req.app.locals.pages=pages;
+            }
+          }); 
+       });
+    //    Page.find({}).sort({sorting:1}).exec(function (err,pages){
+    //     if(err){
+    //       console.log(err);
+    //     }else{
+    //       req.app.locals.pages=pages;
+    //     }
+    //   }); 
+    //});
+});
 /*
 * GET edit page
 */
@@ -144,8 +176,15 @@ router.post('/edit-page/:id',function(req,res){
                     page.title=title;
                     page.slug=slug;
                     page.content=content;
-                     page.save(function(err){
+                    page.save(function(err){
                     if(err) return console.log(err);
+                    Page.find({}).sort({sorting:1}).exec(function (err,pages){
+                        if(err){
+                          console.log(err);
+                        }else{
+                          req.app.locals.pages=pages;
+                        }
+                      }); 
                     req.flash('success','Page added!');
                     res.redirect('/admin/pages/edit-page/'+id);
                 });
@@ -157,11 +196,18 @@ router.post('/edit-page/:id',function(req,res){
 /*
 * GET delete page
 */
-router.get('/delete-category/:id',function(req,res){
-    Category.findByIdAndRemove(req.params.id,function(err){
+router.get('/delete-page/:id',function(req,res){
+    Page.findByIdAndRemove(req.params.id,function(err){
         if(err) return console.log(err);
-        req.flash('success','Category deleted');
-        res.redirect('/admin/categories/')
+        Page.find({}).sort({sorting:1}).exec(function (err,pages){
+            if(err){
+              console.log(err);
+            }else{
+              req.app.locals.pages=pages;
+            }
+          }); 
+        req.flash('success','Page deleted');
+        res.redirect('/admin/pages/')
     })
 })
 module.exports=router;
