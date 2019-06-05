@@ -2,10 +2,12 @@ var express = require('express');
 var router=express.Router();
 // Get Page model
 var Page=require('../models/page');
+var auth = require('../config/auth');
+var isAdmin = auth.isAdmin;
 /*
 * GET pages index
 */
-router.get('/',function(req,res){
+router.get('/',isAdmin,function(req,res){
     Page.find({}).sort({sorting:1}).exec(function(err,pages){
         res.render('admin/pages',{
             pages:pages
@@ -15,7 +17,7 @@ router.get('/',function(req,res){
 /*
 * GET add page
 */
-router.get('/add-page',function(req,res){
+router.get('/add-page',isAdmin,function(req,res){
     var title="";
     var slug="";
     var content="";
@@ -27,7 +29,7 @@ router.get('/add-page',function(req,res){
 /*
 * POST add page
 */    
-router.post('/add-page',function(req,res){
+router.post('/add-page',isAdmin,function(req,res){
     req.checkBody('title','Title must have a value.').notEmpty();
     req.checkBody('content','Content must have a value.').notEmpty();
     var title=req.body.title;
@@ -126,7 +128,7 @@ router.post('/reorder-pages',function(req,res){
 * GET edit page
 */
 //router.get('/edit-page/:slug',function(req,res){
-router.get('/edit-page/:id',function(req,res){
+router.get('/edit-page/:id',isAdmin,function(req,res){
     //Page.findOne({slug:req.params.slug},function(err,page){
     Page.findById(req.params.id,function(err,page){
         if(err)

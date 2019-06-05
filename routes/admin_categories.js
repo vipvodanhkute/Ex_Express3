@@ -2,10 +2,12 @@ var express = require('express');
 var router = express.Router();
 // Get Category model
 var Category = require('../models/category');
+var auth = require('../config/auth');
+var isAdmin = auth.isAdmin;
 /*
 * GET Category index
 */
-router.get('/', function (req, res) {
+router.get('/',isAdmin,function (req, res) {
     Category.find(function (err, categories) {
         if (err) return console.log(err);
         res.render('admin/categories', {
@@ -16,7 +18,7 @@ router.get('/', function (req, res) {
 /*
 * GET add category
 */
-router.get('/add-category', function (req, res) {
+router.get('/add-category',isAdmin,function (req, res) {
     var title = "";
     var slug = "";
     var content = "";
@@ -93,7 +95,7 @@ router.post('/reorder-pages', function (req, res) {
 /*
 * GET edit category
 */
-router.get('/edit-category/:id', function (req, res) {
+router.get('/edit-category/:id',isAdmin,function (req, res) {
     Category.findById(req.params.id, function (err, category) {
         if (err)
             return console.log(err);
@@ -106,7 +108,7 @@ router.get('/edit-category/:id', function (req, res) {
 /*
 * POST edit category
 */
-router.post('/edit-category/:id', function (req, res) {
+router.post('/edit-category/:id',isAdmin,function (req, res) {
     req.checkBody('title', 'Title must have a value.').notEmpty();
     var title = req.body.title;
     var slug = title.replace(/\s+/g, '-').toLowerCase();

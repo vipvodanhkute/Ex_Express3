@@ -14,6 +14,12 @@
 </head>
 
 <body>
+  <div class="ajaxbg">
+    <div class="ajaxinner">
+      <h3>You are now being redirected to paypal...</h3>
+      <img src="/images/ajax-loader.gif" alt="">
+    </div>
+  </div>
   <nav class="navbar navbar-expand navbar-dark bg-dark">
     <div class="container">
       <div class="navbar-header">
@@ -41,11 +47,23 @@
             <a class="nav-link" href="/cart/checkout">My Cart (
               <% if(typeof cart !=="undefined"){ %>
               <%= cart.length %>
-                <% }else{ %>
-                0 )
-                <% } %>
-            </a>
+              <% }else{ %>
+              0
+              <% } %>
+            )</a>
           </li>
+          <% if(user){ %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/logout ">Hi, <%= user.username %></a>
+            <li class="nav-item"><a class="nav-link" href="/users/logout">Logout</a></li>
+          </li>
+          <% }else{ %>
+          <li class="nav-item"><a class="nav-link" href="/users/register">Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="/users/login">Log in</a></li>
+              <% } %>
+          <% if(user && user.admin == 1){ %>
+            <li class="nav-item"><a class="nav-link" href="/admin/pages">Admin Area</a></li>
+            <% } %>    
         </ul>
       </div>
     </div>
@@ -53,6 +71,13 @@
   </nav>
   <div class="container">
     <%- messages('messages', locals) %>
+    <% if(errors) {%>
+    <% errors.forEach(function(error){%>
+    <div class="alert alert-danger">
+      <h1><%=error.msg %></h1>
+    </div>
+    <% });%>
+    <% }%>
     <div class="row">
       <div class="col-xs-12 col-md-3">
         <h3>Categories</h3>

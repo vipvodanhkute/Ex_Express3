@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var expressValidator = require('express-validator');
 var fileUpload = require('express-fileupload');
+var passport = require('passport');
 // Connect to db
 //mongoose.connect('mongodb://localhost/Ex_Express3')
 mongoose.connect(config.database);
@@ -52,6 +53,11 @@ app.use(session({
   saveUninitialized: true,
   //cookie: { secure: true }
 }))
+// Passport Config
+require('./config/passport')(passport);
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
 // Express validator middleware
 app.use(expressValidator({
   errorFormatter: function (param, msg, value) {  
@@ -98,6 +104,7 @@ app.use(function (req, res, next) {
 // chua hiu
 app.get('*',function(req,res,next){
   res.locals.cart=req.session.cart;
+  res.locals.user=req.user || null;
   //console.log(res.locals.cart);
   next();
 })
@@ -107,6 +114,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 var pages = require('./routes/pages.js');
 var products = require('./routes/products.js');
 var cart = require('./routes/cart.js');
+var users = require('./routes/user.js');
 var adminPages = require('./routes/admin_pages.js');
 var adminCategory = require('./routes/admin_categories.js');
 var adminProduct = require('./routes/admin_products.js');
@@ -117,6 +125,7 @@ app.use('/admin/categories', adminCategory);
 app.use('/admin/products', adminProduct);
 app.use('/products', products);
 app.use('/cart', cart);
+app.use('/users', users);
 app.use('/', pages);
 var port = 3000;
 app.listen(port, function () {

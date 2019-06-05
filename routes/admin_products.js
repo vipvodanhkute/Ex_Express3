@@ -3,6 +3,8 @@ var router=express.Router();
 var mkdirp=require('mkdirp');
 var fs=require('fs-extra');
 var resizeImg=require('resize-img');
+var auth = require('../config/auth');
+var isAdmin = auth.isAdmin;
 
 // Get Product model
 var Product=require('../models/product');
@@ -26,7 +28,7 @@ router.get('/',function(req,res){
 /*
 * GET add product
 */
-router.get('/add-product',function(req,res){
+router.get('/add-product',isAdmin ,function(req,res){
     var title="";
     var desc="";
     var price="";
@@ -42,7 +44,7 @@ router.get('/add-product',function(req,res){
 /*
 * POST add product
 */    
-router.post('/add-product',function(req,res){
+router.post('/add-product',isAdmin ,function(req,res){
     //var imageFile=typeof req.files.image !== 'undefined' ? req.files.image.name : "";
     var imageFile=req.files!==null?req.files.image.name : '';
     req.checkBody('title','Title must have a value.').notEmpty();
@@ -141,7 +143,7 @@ router.post('/reorder-pages',function(req,res){
 * GET edit product
 */
 //router.get('/edit-page/:slug',function(req,res){
-router.get('/edit-product/:id',function(req,res){
+router.get('/edit-product/:id',isAdmin ,function(req,res){
     //Page.findOne({slug:req.params.slug},function(err,page){
     var errors;
     if(req.session.errors) errors=req.session.errors;
@@ -262,7 +264,7 @@ router.post('/product-gallery/:id',function(req,res){
 /*
 * GET delete image
 */
-router.get('/delete-image/:image',function(req,res){
+router.get('/delete-image/:image',isAdmin ,function(req,res){
     var originalImage='public/product_images/'+req.query.id+'/gallery/'+req.params.image;
     var thumbImage='public/product_images/'+req.query.id+'/gallery/thumbs/'+req.params.image;
     fs.remove(originalImage,function(err){
@@ -284,7 +286,7 @@ router.get('/delete-image/:image',function(req,res){
 /*
 * GET delete product
 */
-router.get('/delete-product/:id',function(req,res){
+router.get('/delete-product/:id',isAdmin ,function(req,res){
     var id=req.params.id;
     var path='public/product_images/'+id;
     fs.remove(path,function(err){
